@@ -12,12 +12,19 @@ class ListFragment : Fragment() {
     private var _binding: FragmentListBinding? = null
     private val binding: FragmentListBinding get() = _binding!!
 
+    interface Contract {
+        fun onClick(imageId: Int, view: View)
+    }
+
+    private val contract by lazy { requireActivity() as Contract }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View? {
+    ): View {
         _binding = FragmentListBinding.inflate(inflater)
+        postponeEnterTransition()
         return binding.root
     }
 
@@ -30,7 +37,11 @@ class ListFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.recyclerView.apply {
             layoutManager = GridLayoutManager(requireContext(), 2)
-            adapter = RecyclerAdapter()
+            adapter =
+                RecyclerAdapter(object : RecyclerAdapter.Listener {
+                    override fun onClick(imageId: Int, view: View) = contract.onClick(imageId, view)
+                    override fun onStartPostponedEnterTransition() = startPostponedEnterTransition()
+                })
         }
     }
 }
