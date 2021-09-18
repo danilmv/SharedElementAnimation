@@ -1,6 +1,7 @@
 package com.andriod.sharedelementanimation
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.recyclerview.widget.RecyclerView
@@ -10,8 +11,9 @@ class RecyclerAdapter(val listener: Listener) : RecyclerView.Adapter<RecyclerAda
 
     private var images = ImageData.IMAGE_DRAWABLES
 
-    fun interface Listener {
-        fun onClick(imageId: Int)
+    interface Listener {
+        fun onClick(imageId: Int, view: View)
+        fun onStartPostponedEnterTransition()
     }
 
     inner class ViewHolder(parent: ViewGroup) :
@@ -24,7 +26,7 @@ class RecyclerAdapter(val listener: Listener) : RecyclerView.Adapter<RecyclerAda
 
         private val binding = ItemImageBinding.bind(itemView).apply {
             imageView.setOnClickListener {
-                listener.onClick(currentImageId ?: 0)
+                listener.onClick(currentImageId ?: 0, imageView)
             }
         }
 
@@ -32,6 +34,9 @@ class RecyclerAdapter(val listener: Listener) : RecyclerView.Adapter<RecyclerAda
             binding.imageView.apply {
                 currentImageId = imageId
                 setImageDrawable(AppCompatResources.getDrawable(context, imageId))
+                transitionName = imageId.toString()
+                if (currentImageId == imageId)
+                    listener.onStartPostponedEnterTransition()
             }
         }
     }

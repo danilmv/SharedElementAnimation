@@ -1,6 +1,5 @@
 package com.andriod.sharedelementanimation
 
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,10 +13,10 @@ class ListFragment : Fragment() {
     private val binding: FragmentListBinding get() = _binding!!
 
     interface Contract {
-        fun onClick(imageId: Int)
+        fun onClick(imageId: Int, view: View)
     }
 
-    val contract by lazy { requireActivity() as Contract }
+    private val contract by lazy { requireActivity() as Contract }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -25,6 +24,7 @@ class ListFragment : Fragment() {
         savedInstanceState: Bundle?,
     ): View {
         _binding = FragmentListBinding.inflate(inflater)
+        postponeEnterTransition()
         return binding.root
     }
 
@@ -38,7 +38,10 @@ class ListFragment : Fragment() {
         binding.recyclerView.apply {
             layoutManager = GridLayoutManager(requireContext(), 2)
             adapter =
-                RecyclerAdapter { imageId -> contract.onClick(imageId) }
+                RecyclerAdapter(object : RecyclerAdapter.Listener {
+                    override fun onClick(imageId: Int, view: View) = contract.onClick(imageId, view)
+                    override fun onStartPostponedEnterTransition() = startPostponedEnterTransition()
+                })
         }
     }
 }

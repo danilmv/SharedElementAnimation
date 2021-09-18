@@ -1,6 +1,7 @@
 package com.andriod.sharedelementanimation
 
 import android.os.Bundle
+import android.transition.TransitionInflater
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,6 +19,9 @@ class FullScreenImageFragment : Fragment() {
         savedInstanceState: Bundle?,
     ): View {
         _binding = FragmentFullscreenImageBinding.inflate(inflater)
+        sharedElementEnterTransition = TransitionInflater.from(requireContext())
+            .inflateTransition(R.transition.shared_element)
+
         return binding.root
     }
 
@@ -30,8 +34,10 @@ class FullScreenImageFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         val imageId = arguments?.getInt(KEY_IMAGE_ID) ?: 0
 
-        binding.imageView
-            .setImageDrawable(AppCompatResources.getDrawable(requireContext(), imageId))
+        binding.imageView.apply {
+            setImageDrawable(AppCompatResources.getDrawable(requireContext(), imageId))
+            transitionName = imageId.toString()
+        }
     }
 
     companion object {
