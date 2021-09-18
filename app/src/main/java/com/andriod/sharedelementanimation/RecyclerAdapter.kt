@@ -2,24 +2,36 @@ package com.andriod.sharedelementanimation
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.recyclerview.widget.RecyclerView
 import com.andriod.sharedelementanimation.databinding.ItemImageBinding
 
-class RecyclerAdapter : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
+class RecyclerAdapter(val listener: Listener) : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
 
     private var images = ImageData.IMAGE_DRAWABLES
 
-    class ViewHolder(parent: ViewGroup) :
+    fun interface Listener {
+        fun onClick(imageId: Int)
+    }
+
+    inner class ViewHolder(parent: ViewGroup) :
         RecyclerView.ViewHolder(ItemImageBinding.inflate(
             LayoutInflater.from(parent.context),
             parent,
             false).root) {
 
-        val binding = ItemImageBinding.bind(itemView)
+        var currentImageId: Int? = null
 
-        fun bind(drawable: Int) {
+        private val binding = ItemImageBinding.bind(itemView).apply {
+            imageView.setOnClickListener {
+                listener.onClick(currentImageId ?: 0)
+            }
+        }
+
+        fun bind(imageId: Int) {
             binding.imageView.apply {
-                setImageDrawable(resources.getDrawable(drawable, context.theme))
+                currentImageId = imageId
+                setImageDrawable(AppCompatResources.getDrawable(context, imageId))
             }
         }
     }

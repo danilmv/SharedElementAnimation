@@ -1,5 +1,6 @@
 package com.andriod.sharedelementanimation
 
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,11 +13,17 @@ class ListFragment : Fragment() {
     private var _binding: FragmentListBinding? = null
     private val binding: FragmentListBinding get() = _binding!!
 
+    interface Contract {
+        fun onClick(imageId: Int)
+    }
+
+    val contract by lazy { requireActivity() as Contract }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View? {
+    ): View {
         _binding = FragmentListBinding.inflate(inflater)
         return binding.root
     }
@@ -30,7 +37,8 @@ class ListFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.recyclerView.apply {
             layoutManager = GridLayoutManager(requireContext(), 2)
-            adapter = RecyclerAdapter()
+            adapter =
+                RecyclerAdapter { imageId -> contract.onClick(imageId) }
         }
     }
 }
